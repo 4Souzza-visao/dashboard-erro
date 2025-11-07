@@ -34,6 +34,21 @@ Dashboard profissional para monitoramento e gestão de logs de erros em aplicaç
 - 🔎 **Busca textual** em mensagens e stack traces
 - 📊 **Estatísticas detalhadas** e relatórios
 
+### 🔗 Agrupamento de Erros (Fingerprinting) - NOVO!
+- 🎯 **Agrupamento automático** de erros similares
+- 🔍 **Algoritmo inteligente** que normaliza mensagens e stack traces
+- 📈 **Rastreamento de ocorrências** ao longo do tempo
+- 🎛️ **Gerenciamento em massa** de erros relacionados
+- 📊 **Redução de ruído** - visualize apenas grupos únicos
+
+### 🔔 Sistema de Alertas e Notificações - NOVO!
+- 📢 **Notificações em tempo real** via múltiplos canais
+- 🎚️ **5 tipos de condições**: Contagem, Taxa, Crítico, Novo Tipo, Pico
+- 📱 **Canais suportados**: Slack, Discord, Webhook, Email, SMS
+- ⏱️ **Cooldown inteligente** para evitar spam
+- 🎯 **Filtros avançados** por tipo, severidade e origem
+- 📝 **Logs de notificações** para auditoria
+
 ### API REST Completa
 - 🚀 **FastAPI** com documentação automática (Swagger/OpenAPI)
 - 🔐 **Pronta para autenticação** (estrutura preparada)
@@ -448,11 +463,13 @@ dashboard-de-erro/
 ├── backend/
 │   ├── Dockerfile
 │   ├── requirements.txt
-│   ├── main.py              # API principal
-│   ├── models.py            # Modelos SQLAlchemy
-│   ├── schemas.py           # Schemas Pydantic
-│   ├── database.py          # Configuração do banco
-│   └── init_db.py           # Script de inicialização
+│   ├── main.py                    # API principal
+│   ├── models.py                  # Modelos SQLAlchemy (com Fingerprinting)
+│   ├── schemas.py                 # Schemas Pydantic
+│   ├── database.py                # Configuração do banco
+│   ├── notification_service.py    # Serviço de notificações
+│   ├── alert_service.py           # Serviço de alertas
+│   └── init_db.py                 # Script de inicialização
 ├── frontend/
 │   ├── Dockerfile
 │   ├── nginx.conf
@@ -462,7 +479,7 @@ dashboard-de-erro/
 │   └── src/
 │       ├── App.js
 │       ├── services/
-│       │   └── api.js       # Cliente API
+│       │   └── api.js             # Cliente API
 │       ├── components/
 │       │   ├── Layout.js
 │       │   ├── StatCard.js
@@ -470,11 +487,15 @@ dashboard-de-erro/
 │       └── pages/
 │           ├── Dashboard.js
 │           ├── ErrorList.js
-│           └── ErrorDetail.js
+│           ├── ErrorDetail.js
+│           ├── ErrorGroups.js     # Página de grupos (NOVO)
+│           ├── GroupDetail.js     # Detalhes do grupo (NOVO)
+│           └── Alerts.js          # Configuração de alertas (NOVO)
 ├── scripts/
 │   └── generate_sample_errors.py
 ├── docker-compose.yml
-└── README.md
+├── README.md
+└── FINGERPRINTING_E_ALERTAS.md    # Documentação completa (NOVO)
 ```
 
 ## 🔌 Exemplos de Integração
@@ -655,6 +676,28 @@ curl -X POST "http://localhost:8000/api/errors" \
 - Histórico de status
 - Ações (atualizar status, deletar)
 
+### 🔗 Página de Grupos de Erros (NOVO)
+- Visualização de erros agrupados por fingerprint
+- Filtros por tipo, severidade, origem e status
+- Estatísticas de ocorrências por grupo
+- Indicadores visuais de severidade
+- Informações de primeira e última ocorrência
+
+### 📋 Página de Detalhes do Grupo (NOVO)
+- Informações completas do grupo
+- Fingerprint único do grupo
+- Lista de erros recentes do grupo (últimos 10)
+- Edição de status, atribuição e notas
+- Deleção do grupo e erros associados
+
+### 🔔 Página de Alertas (NOVO)
+- Listagem de todas as regras de alerta
+- Criação de novas regras com formulário intuitivo
+- Edição de regras existentes
+- Ativação/desativação rápida de regras
+- Configuração de múltiplos canais de notificação
+- Visualização de último disparo e histórico
+
 ## 🤝 Contribuindo
 
 Contribuições são bem-vindas! Sinta-se à vontade para:
@@ -665,13 +708,76 @@ Contribuições são bem-vindas! Sinta-se à vontade para:
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abrir um Pull Request
 
+## 🆕 Novos Recursos (v2.0)
+
+### Agrupamento de Erros (Fingerprinting)
+
+O sistema agora agrupa automaticamente erros similares usando um algoritmo inteligente de fingerprinting. Isso reduz significativamente o ruído e permite que você foque nos problemas reais.
+
+**Acesse**: `http://localhost:3000/groups`
+
+**Documentação completa**: [FINGERPRINTING_E_ALERTAS.md](FINGERPRINTING_E_ALERTAS.md)
+
+**Exemplo de uso**:
+```bash
+# Listar grupos de erros
+curl "http://localhost:8000/api/groups?severity=CRITICAL"
+
+# Obter detalhes de um grupo
+curl "http://localhost:8000/api/groups/1"
+
+# Atualizar status do grupo
+curl -X PATCH "http://localhost:8000/api/groups/1" \
+  -H "Content-Type: application/json" \
+  -d '{"status": "RESOLVED", "notes": "Fixed in v1.2.3"}'
+```
+
+### Sistema de Alertas e Notificações
+
+Configure regras de alerta para ser notificado automaticamente sobre erros críticos via Slack, Discord, Email, SMS ou Webhook.
+
+**Acesse**: `http://localhost:3000/alerts`
+
+**Canais suportados**:
+- 🟦 **Slack** - Webhooks
+- 🟪 **Discord** - Webhooks
+- 🌐 **Webhook** - HTTP POST genérico
+- 📧 **Email** - SMTP
+- 📱 **SMS** - Twilio
+
+**Tipos de condições**:
+1. **ERROR_COUNT**: X erros em Y minutos
+2. **ERROR_RATE**: Taxa de erro excede X%
+3. **CRITICAL_ERROR**: Qualquer erro crítico
+4. **NEW_ERROR_TYPE**: Novo tipo de erro detectado
+5. **ERROR_SPIKE**: Aumento súbito de erros
+
+**Exemplo de configuração**:
+```bash
+curl -X POST "http://localhost:8000/api/alerts" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Critical Errors Alert",
+    "condition": "CRITICAL_ERROR",
+    "notification_channels": ["SLACK"],
+    "notification_config": {
+      "SLACK": {
+        "recipient": "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+      }
+    },
+    "cooldown_minutes": 15
+  }'
+```
+
+**Para mais detalhes**, consulte: [FINGERPRINTING_E_ALERTAS.md](FINGERPRINTING_E_ALERTAS.md)
+
 ## 📝 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
 ## 👨‍💻 Autor
 
-Desenvolvido para demonstração de um sistema completo de monitoramento de erros.
+Desenvolvido para demonstração de um sistema completo de monitoramento de erros com fingerprinting e alertas inteligentes.
 
 ## 🆘 Suporte
 
@@ -682,7 +788,14 @@ Se você encontrar problemas:
 3. Recrie os containers: `docker-compose down && docker-compose up -d`
 4. Verifique as portas 3000 e 8000 estão livres
 
+**Problemas com notificações?**
+- Verifique logs de notificação: `GET /api/notifications?success_only=false`
+- Confirme credenciais (SMTP, Twilio, etc.)
+- Teste webhooks manualmente
+
 ---
 
 **Feito com ❤️ usando FastAPI, React e Docker**
+
+**v2.0** - Agora com Fingerprinting e Alertas Inteligentes! 🚀
 
