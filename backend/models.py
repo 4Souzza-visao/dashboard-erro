@@ -107,7 +107,7 @@ class ErrorLog(Base):
     user_agent = Column(String(500), nullable=True)
     
     # Additional metadata
-    metadata = Column(JSON, nullable=True)
+    error_metadata = Column(JSON, nullable=True)
     
     # Status tracking
     status = Column(SQLEnum(ErrorStatus), default=ErrorStatus.OPEN, index=True)
@@ -188,7 +188,7 @@ class NotificationLog(Base):
     error_message = Column(Text, nullable=True)
     
     # Metadados
-    metadata = Column(JSON, nullable=True)
+    notification_metadata = Column(JSON, nullable=True)
     
     # Timestamp
     sent_at = Column(DateTime(timezone=True), server_default=func.now())

@@ -73,7 +73,7 @@ def create_error_log(
     - **endpoint**: Endpoint onde ocorreu o erro (opcional)
     - **method**: Método HTTP (opcional)
     - **status_code**: Código de status HTTP (opcional)
-    - **metadata**: Dados adicionais em JSON (opcional)
+    - **error_metadata**: Dados adicionais em JSON (opcional)
     """
     # Gerar fingerprint para agrupar erros similares
     fingerprint = models.generate_fingerprint(

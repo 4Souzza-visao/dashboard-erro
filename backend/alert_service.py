@@ -273,7 +273,7 @@ class AlertService:
                     message=message,
                     sent_successfully=success,
                     error_message=error_msg,
-                    metadata={
+                    notification_metadata={
                         "error_id": error.id,
                         "error_type": error.error_type.value,
                         "severity": error.severity.value

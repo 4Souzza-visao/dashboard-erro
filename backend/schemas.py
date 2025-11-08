@@ -19,7 +19,7 @@ class ErrorLogBase(BaseModel):
     session_id: Optional[str] = Field(None, description="ID da sessão")
     ip_address: Optional[str] = Field(None, description="Endereço IP")
     user_agent: Optional[str] = Field(None, description="User agent")
-    metadata: Optional[Dict[str, Any]] = Field(None, description="Metadados adicionais")
+    error_metadata: Optional[Dict[str, Any]] = Field(None, description="Metadados adicionais")
 
 
 class ErrorLogCreate(ErrorLogBase):
@@ -163,7 +163,7 @@ class NotificationLogResponse(BaseModel):
     message: str
     sent_successfully: bool
     error_message: Optional[str]
-    metadata: Optional[Dict[str, Any]]
+    notification_metadata: Optional[Dict[str, Any]]
     sent_at: datetime
 
     class Config:

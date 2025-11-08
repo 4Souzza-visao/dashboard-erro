@@ -34,7 +34,7 @@ def generate_errors(count=50):
             "method": "POST",
             "status_code": 500,
             "stack_trace": "Traceback (most recent call last):\n  File 'app.py', line 45\n    raise DatabaseError()",
-            "metadata": {"request_id": "req_12345"}
+            "error_metadata": {"request_id": "req_12345"}
         },
         {
             "message": "401 Unauthorized - Invalid API key",
@@ -83,14 +83,14 @@ def generate_errors(count=50):
             "error_type": "PERFORMANCE",
             "severity": "HIGH",
             "source": "database",
-            "metadata": {"query_time": 12.5, "query": "SELECT * FROM large_table"}
+            "error_metadata": {"query_time": 12.5, "query": "SELECT * FROM large_table"}
         },
         {
             "message": "Memory usage exceeded 90% threshold",
             "error_type": "PERFORMANCE",
             "severity": "CRITICAL",
             "source": "backend",
-            "metadata": {"memory_usage": "94%", "server": "prod-01"}
+            "error_metadata": {"memory_usage": "94%", "server": "prod-01"}
         },
         
         # Integration Errors
@@ -100,7 +100,7 @@ def generate_errors(count=50):
             "severity": "CRITICAL",
             "source": "external_service",
             "stack_trace": "requests.exceptions.Timeout: Request timeout after 30s",
-            "metadata": {"service": "stripe", "timeout": 30}
+            "error_metadata": {"service": "stripe", "timeout": 30}
         },
         {
             "message": "Email service unavailable",
@@ -151,11 +151,11 @@ def generate_errors(count=50):
             response = requests.post(f"{API_URL}/api/errors", json=error_data, timeout=5)
             if response.status_code == 201:
                 success_count += 1
-                print(f"✓ Erro {i+1}/{count} criado: {error_data['message'][:50]}...")
+                print(f"[OK] Erro {i+1}/{count} criado: {error_data['message'][:50]}...")
             else:
-                print(f"✗ Falha ao criar erro {i+1}: {response.status_code}")
+                print(f"[ERRO] Falha ao criar erro {i+1}: {response.status_code}")
         except Exception as e:
-            print(f"✗ Erro na requisição {i+1}: {e}")
+            print(f"[ERRO] Erro na requisicao {i+1}: {e}")
     
     print(f"\n{'='*60}")
     print(f"Concluído! {success_count}/{count} erros criados com sucesso")
@@ -171,17 +171,17 @@ if __name__ == "__main__":
     print(f"API URL: {API_URL}\n")
     
     try:
-        # Verificar se a API está acessível
+        # Verificar se a API esta acessivel
         response = requests.get(f"{API_URL}/health", timeout=5)
         if response.status_code == 200:
-            print("✓ API está online e acessível\n")
+            print("[OK] API esta online e acessivel\n")
             generate_errors(count=50)
         else:
-            print("✗ API retornou status inesperado")
+            print("[ERRO] API retornou status inesperado")
     except requests.exceptions.ConnectionError:
-        print("✗ Não foi possível conectar à API")
-        print("Certifique-se de que o Docker Compose está rodando:")
+        print("[ERRO] Nao foi possivel conectar a API")
+        print("Certifique-se de que o Docker Compose esta rodando:")
         print("  docker-compose up -d")
     except Exception as e:
-        print(f"✗ Erro: {e}")
+        print(f"[ERRO] Erro: {e}")
 

@@ -233,7 +233,7 @@ def generate_sample_errors(db: Session, count: int = 100):
             "status": random.choice(statuses),
             "timestamp": timestamp,
             "occurrences": random.randint(1, 10),
-            "metadata": {
+            "error_metadata": {
                 "server": f"server-{random.randint(1, 5)}",
                 "environment": random.choice(["production", "staging", "development"])
             }
